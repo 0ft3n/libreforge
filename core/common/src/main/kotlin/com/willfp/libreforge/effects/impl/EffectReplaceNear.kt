@@ -96,7 +96,7 @@ object EffectReplaceNear : Effect<NoCompileData>("replace_near") {
                         val oldBlockData = toReplace.blockData
                         toReplace.setMetadata("rn-block", plugin.createMetadataValue(true))
 
-                        plugin.scheduler.runLater(duration.toLong()) {
+                        plugin.scheduler.runLater(toReplace.location, duration) {
                             if (toReplace.hasMetadata("rn-block")) {
                                 toReplace.type = oldBlock
                                 toReplace.blockData = oldBlockData

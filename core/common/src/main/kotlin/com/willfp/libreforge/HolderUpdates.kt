@@ -3,6 +3,7 @@ package com.willfp.libreforge
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.willfp.eco.core.EcoPlugin
 import com.willfp.eco.core.events.ArmorChangeEvent
+import com.willfp.libreforge.triggers.run
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -64,7 +65,7 @@ class ItemRefreshListener(
 
         val dispatcher = player.toDispatcher()
 
-        plugin.scheduler.run {
+        plugin.scheduler.run(dispatcher) {
             dispatcher.refreshHolders()
         }
     }

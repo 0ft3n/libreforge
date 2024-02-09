@@ -28,7 +28,7 @@ object EffectCreateExplosion : Effect<NoCompileData>("create_explosion") {
         val power = config.getDoubleFromExpression("power", data)
 
         for (i in 1..amount) {
-            plugin.scheduler.runLater(i.toLong()) {
+            plugin.scheduler.runLater(location, i) {
                 world.createExplosion(location, power.toFloat())
             }
         }
