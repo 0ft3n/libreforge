@@ -77,7 +77,7 @@ object EffectPermanentPotionEffect : Effect<NoCompileData>("permanent_potion_eff
 
         plugin.scheduler.run(player) {
             val effectType = PotionEffectType.getByName(config.getString("effect").uppercase())
-                ?: PotionEffectType.LUCK
+                ?: PotionEffectType.INCREASE_DAMAGE
 
             val level = config.getIntFromExpression("level", player) - 1
 

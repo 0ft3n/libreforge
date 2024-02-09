@@ -19,6 +19,7 @@ import com.willfp.libreforge.plugin
 import com.willfp.libreforge.registerGenericHolderProvider
 import com.willfp.libreforge.triggers.TriggerData
 import com.willfp.libreforge.triggers.TriggerParameter
+import com.willfp.libreforge.triggers.runLater
 import org.bukkit.entity.Player
 import java.util.UUID
 
