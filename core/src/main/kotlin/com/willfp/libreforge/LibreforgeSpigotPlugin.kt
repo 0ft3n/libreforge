@@ -4,7 +4,6 @@ import com.willfp.eco.core.EcoPlugin
 import com.willfp.eco.core.Prerequisite
 import com.willfp.eco.core.command.impl.PluginCommand
 import com.willfp.eco.core.integrations.IntegrationLoader
-import com.willfp.eco.core.integrations.afk.AFKManager
 import com.willfp.libreforge.commands.CommandLibreforge
 import com.willfp.libreforge.configs.ChainsYml
 import com.willfp.libreforge.configs.lrcdb.CommandLrcdb
@@ -136,7 +135,7 @@ class LibreforgeSpigotPlugin : EcoPlugin() {
             Each world is offset by 3 ticks to prevent lag spikes
              */
             var currentOffset = 30L
-            for (world in Bukkit.getWorlds()) {
+            or (world in Bukkit.getWorlds()) {
                 plugin.scheduler.runTimerGlobally(currentOffset.toInt(),
                     configYml.getInt("refresh.entities.interval").toLong().toInt()
                 ) {
@@ -196,7 +195,7 @@ class LibreforgeSpigotPlugin : EcoPlugin() {
     }
 
     override fun getMinimumEcoVersion(): String {
-        return "6.70.0"
+        return "6.69.0"
     }
 
     /**
