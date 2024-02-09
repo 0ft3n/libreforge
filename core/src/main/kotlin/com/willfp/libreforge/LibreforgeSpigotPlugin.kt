@@ -11,7 +11,6 @@ import com.willfp.libreforge.configs.lrcdb.CommandLrcdb
 import com.willfp.libreforge.effects.Effects
 import com.willfp.libreforge.effects.arguments.custom.CustomEffectArguments
 import com.willfp.libreforge.effects.impl.bossbar.BossBarProgressPlaceholder
-import com.willfp.libreforge.integrations.auraskills.AuraSkillsIntegration
 import com.willfp.libreforge.integrations.aureliumskills.AureliumSkillsIntegration
 import com.willfp.libreforge.integrations.citizens.CitizensIntegration
 import com.willfp.libreforge.integrations.custombiomes.impl.CustomBiomesTerra
@@ -27,7 +26,12 @@ import com.willfp.libreforge.integrations.tmmobcoins.TMMobcoinsIntegration
 import com.willfp.libreforge.integrations.vault.VaultIntegration
 import com.willfp.libreforge.integrations.worldguard.WorldGuardIntegration
 import com.willfp.libreforge.levels.LevelTypes
-import com.willfp.libreforge.levels.placeholder.*
+import com.willfp.libreforge.levels.placeholder.ItemDataPlaceholder
+import com.willfp.libreforge.levels.placeholder.ItemLevelPlaceholder
+import com.willfp.libreforge.levels.placeholder.ItemPointsPlaceholder
+import com.willfp.libreforge.levels.placeholder.ItemProgressPlaceholder
+import com.willfp.libreforge.levels.placeholder.ItemXPPlaceholder
+import com.willfp.libreforge.levels.placeholder.ItemXPRequiredPlaceholder
 import com.willfp.libreforge.placeholders.CustomPlaceholders
 import com.willfp.libreforge.triggers.DispatchedTriggerFactory
 import org.bukkit.Bukkit
@@ -116,7 +120,7 @@ class LibreforgeSpigotPlugin : EcoPlugin() {
 
         // Poll for changes
         val skipAFKPlayers = configYml.getBool("refresh.players.skip-afk-players")
-        plugin.scheduler.runTimer(20, 20) {
+        plugin.scheduler.runTimerGlobally(20, 20) {
             for (player in Bukkit.getOnlinePlayers()) {
                 if (skipAFKPlayers && AFKManager.isAfk(player)) {
                     continue
@@ -133,7 +137,9 @@ class LibreforgeSpigotPlugin : EcoPlugin() {
              */
             var currentOffset = 30L
             for (world in Bukkit.getWorlds()) {
-                plugin.scheduler.runTimer(currentOffset, configYml.getInt("refresh.entities.interval").toLong()) {
+                plugin.scheduler.runTimerGlobally(currentOffset.toInt(),
+                    configYml.getInt("refresh.entities.interval").toLong().toInt()
+                ) {
                     for (entity in world.entities) {
                         if (entity is LivingEntity) {
                             entity.toDispatcher().refreshHolders()
@@ -145,7 +151,7 @@ class LibreforgeSpigotPlugin : EcoPlugin() {
         }
 
         // Poll for changes in global holders
-        this.scheduler.runTimer(25, 20) {
+        this.scheduler.runTimerGlobally(25, 20) {
             GlobalDispatcher.refreshHolders()
         }
     }

@@ -15,6 +15,7 @@ import com.willfp.libreforge.nest
 import com.willfp.libreforge.plugin
 import com.willfp.libreforge.registerGenericHolderProvider
 import com.willfp.libreforge.triggers.TriggerData
+import com.willfp.libreforge.triggers.runLater
 import java.util.UUID
 
 object EffectAddHolder : Effect<HolderTemplate>("add_holder") {
@@ -40,7 +41,7 @@ object EffectAddHolder : Effect<HolderTemplate>("add_holder") {
 
         holders[dispatcher.uuid] += holder
 
-        plugin.scheduler.runLater(duration.toLong()) {
+        plugin.scheduler.runLater(dispatcher, duration) {
             holders[dispatcher.uuid] -= holder
             if (holders[dispatcher.uuid].isEmpty()) {
                 holders -= dispatcher.uuid
