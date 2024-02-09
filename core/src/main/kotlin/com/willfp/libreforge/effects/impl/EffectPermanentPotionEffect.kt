@@ -45,22 +45,24 @@ object EffectPermanentPotionEffect : Effect<NoCompileData>("permanent_potion_eff
     fun onRespawn(event: PlayerRespawnEvent) {
         val player = event.player
 
-        val meta = player.getMetadata(metaKey).firstOrNull()?.value()
-                as? MutableMap<UUID, Pair<PotionEffectType, Int>> ?: mutableMapOf()
+        plugin.scheduler.run(player) {
+            val meta = player.getMetadata(metaKey).firstOrNull()?.value()
+                    as? MutableMap<UUID, Pair<PotionEffectType, Int>> ?: mutableMapOf()
 
-        for ((_, pair) in meta) {
-            val (effectType, level) = pair
+            for ((_, pair) in meta) {
+                val (effectType, level) = pair
 
-            val effect = PotionEffect(
-                effectType,
-                duration,
-                level,
-                false,
-                false,
-                true
-            )
+                val effect = PotionEffect(
+                    effectType,
+                    duration,
+                    level,
+                    false,
+                    false,
+                    true
+                )
 
-            player.addPotionEffect(effect)
+                player.addPotionEffect(effect)
+            }
         }
     }
 
@@ -73,53 +75,57 @@ object EffectPermanentPotionEffect : Effect<NoCompileData>("permanent_potion_eff
     ) {
         val player = dispatcher.get<Player>() ?: return
 
-        val effectType = PotionEffectType.getByName(config.getString("effect").uppercase())
-            ?: PotionEffectType.INCREASE_DAMAGE
+        plugin.scheduler.run(player) {
+            val effectType = PotionEffectType.getByName(config.getString("effect").uppercase())
+                ?: PotionEffectType.INCREASE_DAMAGE
 
-        val level = config.getIntFromExpression("level", player) - 1
+            val level = config.getIntFromExpression("level", player) - 1
 
-        val effect = PotionEffect(
-            effectType,
-            duration,
-            level,
-            false,
-            false,
-            true
-        )
+            val effect = PotionEffect(
+                effectType,
+                duration,
+                level,
+                false,
+                false,
+                true
+            )
 
-        player.addPotionEffect(effect)
+            player.addPotionEffect(effect)
 
-        val meta = player.getMetadata(metaKey).firstOrNull()?.value()
-                as? MutableMap<UUID, Pair<PotionEffectType, Int>> ?: mutableMapOf()
+            val meta = player.getMetadata(metaKey).firstOrNull()?.value()
+                    as? MutableMap<UUID, Pair<PotionEffectType, Int>> ?: mutableMapOf()
 
-        meta[identifiers.uuid] = Pair(effectType, level)
+            meta[identifiers.uuid] = Pair(effectType, level)
 
-        player.setMetadata(metaKey, plugin.metadataValueFactory.create(meta))
+            player.setMetadata(metaKey, plugin.metadataValueFactory.create(meta))
+        }
     }
 
     override fun onDisable(dispatcher: Dispatcher<*>, identifiers: Identifiers, holder: ProvidedHolder) {
         val player = dispatcher.get<Player>() ?: return
 
-        val meta = player.getMetadata(metaKey).firstOrNull()?.value()
-                as? MutableMap<UUID, Pair<PotionEffectType, Int>> ?: mutableMapOf()
+        plugin.scheduler.run(player) {
+            val meta = player.getMetadata(metaKey).firstOrNull()?.value()
+                    as? MutableMap<UUID, Pair<PotionEffectType, Int>> ?: mutableMapOf()
 
-        val (toRemove, _) = meta[identifiers.uuid] ?: return
+            val (toRemove, _) = meta[identifiers.uuid] ?: return@run
 
-        val active = player.getPotionEffect(toRemove) ?: return
+            val active = player.getPotionEffect(toRemove) ?: return@run
 
-        if (Prerequisite.HAS_1_19_4.isMet) {
-            if (active.duration != -1) {
-                return
+            if (Prerequisite.HAS_1_19_4.isMet) {
+                if (active.duration != -1) {
+                    return@run
+                }
+            } else {
+                if (active.duration < 1_000_000_000) {
+                    return@run
+                }
             }
-        } else {
-            if (active.duration < 1_000_000_000) {
-                return
-            }
+
+            meta.remove(identifiers.uuid)
+            player.setMetadata(metaKey, plugin.metadataValueFactory.create(meta))
+
+            player.removePotionEffect(toRemove)
         }
-
-        meta.remove(identifiers.uuid)
-        player.setMetadata(metaKey, plugin.metadataValueFactory.create(meta))
-
-        player.removePotionEffect(toRemove)
     }
 }

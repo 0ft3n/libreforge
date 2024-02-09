@@ -3,6 +3,7 @@ package com.willfp.libreforge
 import com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent
 import com.willfp.libreforge.EmptyProvidedHolder.holder
 import com.willfp.libreforge.effects.Effects
+import com.willfp.libreforge.triggers.run
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -38,7 +39,7 @@ object EffectDataFixer : Listener {
 
         dispatcher.updateHolders()
 
-        plugin.scheduler.run {
+        plugin.scheduler.run(dispatcher) {
             dispatcher.updateEffects()
         }
     }

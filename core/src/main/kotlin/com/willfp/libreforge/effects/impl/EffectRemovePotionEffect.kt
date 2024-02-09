@@ -32,7 +32,7 @@ object EffectRemovePotionEffect : Effect<NoCompileData>("remove_potion_effect") 
             data.victim ?: return false
         }
 
-        plugin.scheduler.run {
+        plugin.scheduler.run(toApply) {
             toApply.removePotionEffect(
                 PotionEffectType.getByName(config.getString("effect").uppercase())
                     ?: PotionEffectType.INCREASE_DAMAGE

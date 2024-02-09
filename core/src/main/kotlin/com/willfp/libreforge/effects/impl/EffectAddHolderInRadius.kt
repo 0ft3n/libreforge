@@ -3,6 +3,8 @@ package com.willfp.libreforge.effects.impl
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.willfp.eco.core.config.interfaces.Config
 import com.willfp.libreforge.Dispatcher
+import com.willfp.libreforge.EmptyProvidedHolder.holder
+import com.willfp.libreforge.GlobalDispatcher.location
 import com.willfp.libreforge.Holder
 import com.willfp.libreforge.HolderTemplate
 import com.willfp.libreforge.SimpleProvidedHolder
@@ -17,6 +19,8 @@ import com.willfp.libreforge.nest
 import com.willfp.libreforge.plugin
 import com.willfp.libreforge.registerGenericHolderProvider
 import com.willfp.libreforge.triggers.TriggerData
+import com.willfp.libreforge.triggers.TriggerParameter
+import com.willfp.libreforge.triggers.runLater
 import org.bukkit.Location
 import java.util.Objects
 import java.util.UUID
@@ -53,7 +57,7 @@ object EffectAddHolderInRadius : Effect<HolderTemplate>("add_holder_in_radius") 
         val location = dispatcher.location ?: return false
 
         val radius = config.getDoubleFromExpression("radius", data)
-        val duration = config.getIntFromExpression("duration", data).coerceAtLeast(1)
+        val duration = config.getIntFromExpression("duration", data)
         val applyToSelf = config.getBool("apply-to-self")
 
         val holder = NearbyHolder(
@@ -65,7 +69,7 @@ object EffectAddHolderInRadius : Effect<HolderTemplate>("add_holder_in_radius") 
         )
 
         holders += holder
-        plugin.scheduler.runLater(duration.toLong()) {
+        plugin.scheduler.runLater(dispatcher, duration) {
             holders -= holder
         }
 

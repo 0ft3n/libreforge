@@ -5,8 +5,10 @@ import com.willfp.libreforge.NoCompileData
 import com.willfp.libreforge.arguments
 import com.willfp.libreforge.effects.Effect
 import com.willfp.libreforge.getIntFromExpression
+import com.willfp.libreforge.plugin
 import com.willfp.libreforge.triggers.TriggerData
 import com.willfp.libreforge.triggers.TriggerParameter
+import com.willfp.libreforge.triggers.run
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 
@@ -35,17 +37,19 @@ object EffectPotionEffect : Effect<NoCompileData>("potion_effect") {
             data.victim ?: return false
         }
 
-        toApply.addPotionEffect(
-            PotionEffect(
-                PotionEffectType.getByName(config.getString("effect").uppercase())
-                    ?: PotionEffectType.INCREASE_DAMAGE,
-                config.getIntFromExpression("duration", data),
-                config.getIntFromExpression("level", data) - 1,
-                true,
-                true,
-                true
+        plugin.scheduler.run(toApply) {
+            toApply.addPotionEffect(
+                PotionEffect(
+                    PotionEffectType.getByName(config.getString("effect").uppercase())
+                        ?: PotionEffectType.INCREASE_DAMAGE,
+                    config.getIntFromExpression("duration", data),
+                    config.getIntFromExpression("level", data) - 1,
+                    true,
+                    true,
+                    true
+                )
             )
-        )
+        }
 
         return true
     }

@@ -10,6 +10,7 @@ import com.willfp.libreforge.effects.Chain
 import com.willfp.libreforge.get
 import com.willfp.libreforge.plugin
 import com.willfp.libreforge.toDispatcher
+import com.willfp.libreforge.triggers.run
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import java.util.UUID
@@ -54,7 +55,7 @@ class ConditionBlock<T> internal constructor(
              */
 
             if (!syncMetCache.asMap().containsKey(dispatcher.uuid)) {
-                plugin.scheduler.run {
+                plugin.scheduler.run(dispatcher) {
                     // Double check that it isn't cached by the time we run
                     if (!syncMetCache.asMap().containsKey(dispatcher.uuid)) {
                         syncMetCache.put(dispatcher.uuid, isMet(dispatcher, holder))
