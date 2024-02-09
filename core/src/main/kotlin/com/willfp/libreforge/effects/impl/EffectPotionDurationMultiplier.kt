@@ -28,7 +28,7 @@ object EffectPotionDurationMultiplier : MultiplierEffect("potion_duration_multip
 
         val multiplier = getMultiplier(player.toDispatcher())
 
-        plugin.scheduler.run {
+        plugin.scheduler.run(player) {
             for (i in 0..2) {
                 val item = event.contents.getItem(i) ?: continue
                 val meta = item.itemMeta as? PotionMeta ?: continue

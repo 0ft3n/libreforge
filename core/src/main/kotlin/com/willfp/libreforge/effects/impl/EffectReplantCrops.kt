@@ -119,7 +119,7 @@ object EffectReplantCrops : Effect<NoCompileData>("replant_crops") {
 
         data.age = 0
 
-        plugin.scheduler.run {
+        plugin.scheduler.run(block.location) {
             block.type = type
             block.blockData = data
 

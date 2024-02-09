@@ -20,6 +20,7 @@ import com.willfp.libreforge.plugin
 import com.willfp.libreforge.registerGenericHolderProvider
 import com.willfp.libreforge.triggers.TriggerData
 import com.willfp.libreforge.triggers.TriggerParameter
+import com.willfp.libreforge.triggers.runLater
 import org.bukkit.Location
 import java.util.Objects
 import java.util.UUID
@@ -68,7 +69,7 @@ object EffectAddHolderInRadius : Effect<HolderTemplate>("add_holder_in_radius") 
         )
 
         holders += holder
-        plugin.scheduler.runLater(duration.toLong()) {
+        plugin.scheduler.runLater(dispatcher, duration) {
             holders -= holder
         }
 

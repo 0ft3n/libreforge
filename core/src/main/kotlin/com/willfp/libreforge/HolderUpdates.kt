@@ -3,6 +3,7 @@ package com.willfp.libreforge
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.willfp.eco.core.EcoPlugin
 import com.willfp.eco.core.events.ArmorChangeEvent
+import com.willfp.libreforge.triggers.run
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -54,7 +55,7 @@ class ItemRefreshListener(
     fun onChangeSlot(event: PlayerItemHeldEvent) {
         val dispatcher = event.player.toDispatcher()
         dispatcher.refreshHolders()
-        plugin.scheduler.run {
+        plugin.scheduler.run(dispatcher) {
             dispatcher.refreshHolders()
         }
     }

@@ -1,3 +1,4 @@
+folia-supported: true
 name: libreforge
 version: ${projectVersion}
 main: com.willfp.libreforge.LibreforgeSpigotPlugin

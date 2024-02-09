@@ -27,7 +27,7 @@ object TriggerGroupStatic : TriggerGroup("static") {
     }
 
     override fun postRegister() {
-        plugin.scheduler.runTimer(1, 1) {
+        plugin.scheduler.runTimerGlobally(1, 1) {
             tick++
 
             for ((interval, trigger) in registry) {

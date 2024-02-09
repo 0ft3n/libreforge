@@ -30,7 +30,7 @@ object TriggerBrew : Trigger("brew") {
         val location = inventory.location ?: return
         val oldContents = inventory.contents
 
-        plugin.scheduler.runLater(2) {
+        plugin.scheduler.runLater(location, 2) {
             val newContents = inventory.contents
 
             if (!oldContents.contentEquals(newContents)) {

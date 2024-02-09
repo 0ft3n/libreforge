@@ -118,7 +118,7 @@ class LibreforgeSpigotPlugin : EcoPlugin() {
         dispatchedTriggerFactory.startTicking()
 
         // Poll for changes
-        plugin.scheduler.runTimer(20, 20) {
+        plugin.scheduler.runTimerGlobally(20, 20) {
             for (player in Bukkit.getOnlinePlayers()) {
                 player.toDispatcher().refreshHolders()
             }
@@ -129,9 +129,9 @@ class LibreforgeSpigotPlugin : EcoPlugin() {
             Poll for changes in entities
             Each world is offset by 3 ticks to prevent lag spikes
              */
-            var currentOffset = 30L
+            var currentOffset = 30
             for (world in Bukkit.getWorlds()) {
-                plugin.scheduler.runTimer(currentOffset, configYml.getInt("refresh.entities.interval").toLong()) {
+                plugin.scheduler.runTimerGlobally(currentOffset, configYml.getInt("refresh.entities.interval")) {
                     for (entity in world.entities) {
                         if (entity is LivingEntity) {
                             entity.toDispatcher().refreshHolders()
@@ -143,7 +143,7 @@ class LibreforgeSpigotPlugin : EcoPlugin() {
         }
 
         // Poll for changes in global holders
-        this.scheduler.runTimer(25, 20) {
+        this.scheduler.runTimerGlobally(25, 20) {
             GlobalDispatcher.refreshHolders()
         }
     }
