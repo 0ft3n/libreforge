@@ -2,11 +2,9 @@ package com.willfp.libreforge.effects.impl
 
 import com.willfp.eco.core.config.interfaces.Config
 import com.willfp.eco.core.placeholder.translatePlaceholders
-import com.willfp.libreforge.NoCompileData
-import com.willfp.libreforge.arguments
+import com.willfp.libreforge.*
 import com.willfp.libreforge.effects.Effect
-import com.willfp.libreforge.getStrings
-import com.willfp.libreforge.toPlaceholderContext
+import com.willfp.libreforge.plugin
 import com.willfp.libreforge.triggers.TriggerData
 import com.willfp.libreforge.triggers.TriggerParameter
 import org.bukkit.Bukkit
@@ -28,11 +26,13 @@ object EffectRunCommand : Effect<NoCompileData>("run_command") {
             it.replace("%victim%", victim?.name ?: "")}
             .map { it.translatePlaceholders(config.toPlaceholderContext(data)) }
 
-        commands.forEach {
-            Bukkit.getServer().dispatchCommand(
-                Bukkit.getConsoleSender(),
-                it
-            )
+        plugin.scheduler.runGlobally {
+            commands.forEach {
+                Bukkit.getServer().dispatchCommand(
+                    Bukkit.getConsoleSender(),
+                    it
+                )
+            }
         }
 
         return true
