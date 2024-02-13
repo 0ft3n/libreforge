@@ -2,13 +2,12 @@ package com.willfp.libreforge.effects.impl
 
 import com.willfp.eco.core.config.interfaces.Config
 import com.willfp.eco.core.placeholder.translatePlaceholders
-import com.willfp.libreforge.NoCompileData
-import com.willfp.libreforge.arguments
+import com.willfp.libreforge.*
 import com.willfp.libreforge.effects.Effect
-import com.willfp.libreforge.getStrings
-import com.willfp.libreforge.toPlaceholderContext
+import com.willfp.libreforge.plugin
 import com.willfp.libreforge.triggers.TriggerData
 import com.willfp.libreforge.triggers.TriggerParameter
+import com.willfp.libreforge.triggers.run
 import org.bukkit.entity.Player
 
 object EffectRunPlayerCommand : Effect<NoCompileData>("run_player_command") {
@@ -31,14 +30,16 @@ object EffectRunPlayerCommand : Effect<NoCompileData>("run_player_command") {
 
         val isOp = player.isOp
 
-        commands.forEach {
-            try {
-                if (!isOp) {
-                    player.isOp = config.getBool("as_op")
+        plugin.scheduler.run(player) {
+            commands.forEach {
+                try {
+                    if (!isOp) {
+                        player.isOp = config.getBool("as_op")
+                    }
+                    player.performCommand(it)
+                } finally {
+                    player.isOp = isOp
                 }
-                player.performCommand(it)
-            } finally {
-                player.isOp = isOp
             }
         }
 
