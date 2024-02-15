@@ -61,7 +61,7 @@ object TriggerGroupStatic : TriggerGroup("static") {
                     player = player,
                     location = player.location,
                     victim = player,
-                    block = block,
+                    // block = block,
                     velocity = player.velocity,
                     item = player.inventory.itemInMainHand
                 )
