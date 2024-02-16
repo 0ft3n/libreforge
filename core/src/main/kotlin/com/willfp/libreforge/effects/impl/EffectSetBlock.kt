@@ -4,8 +4,10 @@ import com.willfp.eco.core.config.interfaces.Config
 import com.willfp.libreforge.ViolationContext
 import com.willfp.libreforge.arguments
 import com.willfp.libreforge.effects.Effect
+import com.willfp.libreforge.plugin
 import com.willfp.libreforge.triggers.TriggerData
 import com.willfp.libreforge.triggers.TriggerParameter
+import com.willfp.libreforge.triggers.run
 import org.bukkit.Material
 
 object EffectSetBlock : Effect<Material?>("set_block") {
@@ -20,9 +22,9 @@ object EffectSetBlock : Effect<Material?>("set_block") {
     override fun onTrigger(config: Config, data: TriggerData, compileData: Material?): Boolean {
         val block = data.block ?: data.location?.block ?: return false
         compileData ?: return false
-
-        block.type = compileData
-
+        plugin.scheduler.run(block.location) {
+            block.type = compileData
+        }
         return true
     }
 
