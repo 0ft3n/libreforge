@@ -2,18 +2,17 @@ package com.willfp.libreforge.triggers
 
 import com.willfp.eco.core.registry.KRegistrable
 import com.willfp.libreforge.Dispatcher
-import com.willfp.libreforge.EmptyProvidedHolder.holder
 import com.willfp.libreforge.ProvidedEffectBlock
 import com.willfp.libreforge.ProvidedHolder
 import com.willfp.libreforge.counters.bind.BoundCounters
 import com.willfp.libreforge.counters.bind.BoundCounters.bindings
 import com.willfp.libreforge.generatePlaceholders
 import com.willfp.libreforge.getProvidedActiveEffects
-import com.willfp.libreforge.notNullMutableMapOf
 import com.willfp.libreforge.plugin
 import com.willfp.libreforge.providedActiveEffects
 import com.willfp.libreforge.toDispatcher
 import com.willfp.libreforge.triggers.event.TriggerDispatchEvent
+import com.willfp.libreforge.triggers.impl.TriggerAltClick
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.Cancellable
@@ -72,14 +71,17 @@ abstract class Trigger(
         data: TriggerData,
         effects: List<ProvidedEffectBlock>
     ) {
+        // Do this first to filter disabled triggers
         val dispatch = plugin.dispatchedTriggerFactory.create(dispatcher, this, data) ?: return
 
+        val counters = BoundCounters.values()
+
         // Prevent dispatching useless triggers
-        val potentialDestinations = effects.map { it.effect } + BoundCounters.values()
+        val potentialDestinations = effects.map { it.effect } + counters
         if (potentialDestinations.none { it.canBeTriggeredBy(this) }) {
             return
         }
-
+        // Only dispatch placeholders after we know we're going to dispatch
         dispatch.generatePlaceholders()
 
         val dispatchEvent = TriggerDispatchEvent(dispatcher, dispatch)
@@ -95,22 +97,22 @@ abstract class Trigger(
         for (block in effects) {
             if (block.effect.canBeTriggeredBy(this)) {
                 // Effects are already sorted by priority
-                triggerableEffects.add(block)
+                triggerableEffects += block
             }
         }
 
         // Only calculate placeholders once per holder
-        val holderDispatches = notNullMutableMapOf<ProvidedHolder, DispatchedTrigger>()
+        val holderDispatches = mutableMapOf<ProvidedHolder, DispatchedTrigger>()
 
-        for (holder in triggerableEffects.map { it.holder }.toSet()) {
+        for ((_, holder) in triggerableEffects) {
             val withHolder = dispatch.data.copy().apply {
                 this.holder = holder
             }
 
             val dispatchWithHolder = DispatchedTrigger(dispatcher, this, withHolder).inheritPlaceholders(dispatch)
 
-            for (placeholder in holder.generatePlaceholders(dispatcher)) {
-                dispatchWithHolder.addPlaceholder(placeholder)
+            holder.generatePlaceholders(dispatcher).forEach {
+                dispatchWithHolder.addPlaceholder(it)
             }
 
             holderDispatches[holder] = dispatchWithHolder
@@ -120,20 +122,23 @@ abstract class Trigger(
         for ((block, holder) in triggerableEffects) {
             // Fixes cancel_event not working
             if (data.event is Cancellable && data.event.isCancelled) {
-                return
+                // alt_click triggers are special and should be allowed to trigger even if the event is cancelled
+                // Otherwise, clicking the air will not trigger the alt_click trigger
+                if (this !is TriggerAltClick) {
+                    return
+                }
             }
 
-            val dispatchWithHolder = holderDispatches[holder]
+            val dispatchWithHolder = holderDispatches[holder] ?: continue
 
             block.tryTrigger(dispatchWithHolder)
         }
 
         // Probably a better way to work with counters, but this works for now.
-        for (counter in BoundCounters.values()) {
+        for (counter in counters) {
             counter.bindings.forEach { it.accept(dispatch) }
         }
     }
-
 
     final override fun onRegister() {
         plugin.runWhenEnabled {

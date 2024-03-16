@@ -101,9 +101,9 @@ object EffectAddHolderInRadius : Effect<HolderTemplate>("add_holder_in_radius") 
         val applyToSelf: Boolean
     ) {
         fun canApplyTo(dispatcher: Dispatcher<*>): Boolean {
-            val location = dispatcher.location ?: return false
+            val otherLocation = dispatcher.location ?: return false
 
-            if (location.world != location.world) {
+            if (location.world != otherLocation.world) {
                 return false
             }
 
@@ -111,7 +111,7 @@ object EffectAddHolderInRadius : Effect<HolderTemplate>("add_holder_in_radius") 
                 return false
             }
 
-            if (location.toVector().distanceSquared(location.toVector()) > radius * radius) {
+            if (otherLocation.toVector().distanceSquared(otherLocation.toVector()) > radius * radius) {
                 return false
             }
 

@@ -26,7 +26,7 @@ interface HolderProvider {
 /**
  * A typed holder provider.
  */
-interface TypedHolderProvider<T: Holder> : HolderProvider {
+interface TypedHolderProvider<T : Holder> : HolderProvider {
     override fun provide(dispatcher: Dispatcher<*>): Collection<TypedProvidedHolder<T>>
 }
 
@@ -218,7 +218,7 @@ fun registerPlaceholderProvider(provider: (ProvidedHolder, Dispatcher<*>) -> Col
 /**
  * Register a function to generate placeholders for a holder for any dispatcher.
  */
-inline fun <reified T: Holder> registerHolderPlaceholderProvider(crossinline provider: (T, Dispatcher<*>) -> Collection<NamedValue>) {
+inline fun <reified T : Holder> registerHolderPlaceholderProvider(crossinline provider: (T, Dispatcher<*>) -> Collection<NamedValue>) {
     registerPlaceholderProvider { provided, dispatcher ->
         val holder = provided.holder
         if (holder is T) {
@@ -232,7 +232,7 @@ inline fun <reified T: Holder> registerHolderPlaceholderProvider(crossinline pro
 /**
  * Register a function to generate placeholders for a holder for a specific dispatcher.
  */
-inline fun <reified T: Holder, reified R> registerSpecificHolderPlaceholderProvider(crossinline provider: (T, R) -> Collection<NamedValue>) {
+inline fun <reified T : Holder, reified R> registerSpecificHolderPlaceholderProvider(crossinline provider: (T, R) -> Collection<NamedValue>) {
     registerPlaceholderProvider { provided, dispatcher ->
         val holder = provided.holder
         if (holder is T && dispatcher.isType<R>()) {
@@ -298,7 +298,7 @@ val Dispatcher<*>.holders: Collection<ProvidedHolder>
 /**
  * Get holders of a specific type.
  */
-inline fun <reified T: Holder> Dispatcher<*>.getHoldersOfType(): Collection<T> {
+inline fun <reified T : Holder> Dispatcher<*>.getHoldersOfType(): Collection<T> {
     return this.holders.mapNotNull { it.holder as? T }
 }
 
