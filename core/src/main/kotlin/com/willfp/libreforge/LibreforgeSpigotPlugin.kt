@@ -1,5 +1,6 @@
 package com.willfp.libreforge
 
+import com.gmail.nossr50.mcMMO.p
 import com.willfp.eco.core.EcoPlugin
 import com.willfp.eco.core.Prerequisite
 import com.willfp.eco.core.command.impl.PluginCommand

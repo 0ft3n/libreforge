@@ -36,7 +36,7 @@ object EffectAddHolder : Effect<HolderTemplate>("add_holder") {
 
     override fun onTrigger(config: Config, data: TriggerData, compileData: HolderTemplate): Boolean {
         val dispatcher = data.dispatcher
-        val duration = config.getIntFromExpression("duration", data).coerceAtLeast(1)
+        val duration = config.getIntFromExpression("duration", data)
         val holder = compileData.toHolder().nest(data.holder)
 
         holders[dispatcher.uuid] += holder

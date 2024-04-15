@@ -111,7 +111,7 @@ object EffectAddHolderInRadius : Effect<HolderTemplate>("add_holder_in_radius") 
                 return false
             }
 
-            if (location.toVector().distanceSquared(otherLocation.toVector()) > radius * radius) {
+            if (otherLocation.toVector().distanceSquared(otherLocation.toVector()) > radius * radius) {
                 return false
             }
 
