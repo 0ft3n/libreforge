@@ -121,11 +121,11 @@ class LibreforgeSpigotPlugin : EcoPlugin() {
         // Poll for changes
         val skipAFKPlayers = configYml.getBool("refresh.players.skip-afk-players")
         plugin.scheduler.runTimerGlobally(20, 20) {
-            if (skipAFKPlayers && AFKManager.isAfk(player)) {
-                continue
-            }
-
             for (player in Bukkit.getOnlinePlayers()) {
+                if (skipAFKPlayers && AFKManager.isAfk(player)) {
+                    continue
+                }
+
                 player.toDispatcher().refreshHolders()
             }
         }
