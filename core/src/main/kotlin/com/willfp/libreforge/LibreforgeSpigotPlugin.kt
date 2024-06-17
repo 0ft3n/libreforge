@@ -136,7 +136,7 @@ class LibreforgeSpigotPlugin : EcoPlugin() {
             Each world is offset by 3 ticks to prevent lag spikes
              */
             var currentOffset = 30L
-            or (world in Bukkit.getWorlds()) {
+            for (world in Bukkit.getWorlds()) {
                 plugin.scheduler.runTimerGlobally(currentOffset.toInt(),
                     configYml.getInt("refresh.entities.interval").toLong().toInt()
                 ) {
