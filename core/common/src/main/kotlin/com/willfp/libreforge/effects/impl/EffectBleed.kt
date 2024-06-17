@@ -56,7 +56,7 @@ object EffectBleed : Effect<NoCompileData>("bleed") {
             if (current >= amount || killed) {
                 it.cancel()
             }
-        }.runTaskTimer(interval.toLong(), interval.toLong())
+        }.runTaskTimer(victim, interval.toLong(), interval.toLong())
 
         return true
     }
