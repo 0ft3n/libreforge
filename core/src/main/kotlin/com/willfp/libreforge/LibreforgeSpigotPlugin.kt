@@ -4,6 +4,7 @@ import com.willfp.eco.core.EcoPlugin
 import com.willfp.eco.core.Prerequisite
 import com.willfp.eco.core.command.impl.PluginCommand
 import com.willfp.eco.core.integrations.IntegrationLoader
+import com.willfp.eco.core.integrations.afk.AFKManager
 import com.willfp.libreforge.commands.CommandLibreforge
 import com.willfp.libreforge.configs.ChainsYml
 import com.willfp.libreforge.configs.lrcdb.CommandLrcdb
