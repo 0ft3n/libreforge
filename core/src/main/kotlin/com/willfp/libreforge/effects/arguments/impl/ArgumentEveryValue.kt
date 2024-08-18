@@ -8,13 +8,13 @@ import com.willfp.libreforge.getIntFromExpression
 import com.willfp.libreforge.triggers.DispatchedTrigger
 import java.util.UUID
 
-object ArgumentEvery: EffectArgument<NoCompileData>("every") {
-    private val everyHandler = nestedMap<UUID, UUID, Int>()
+object ArgumentEveryValue: EffectArgument<NoCompileData>("every_value") {
+    private val everyHandler = nestedMap<UUID, UUID, Double>()
 
     override fun isMet(element: ConfigurableElement, trigger: DispatchedTrigger, compileData: NoCompileData): Boolean {
-        val current = everyHandler[element.uuid][trigger.dispatcher.uuid] ?: 1
+        val current = everyHandler[element.uuid][trigger.dispatcher.uuid] ?: 1.0
 
-        return current == 0
+        return current == 0.0
     }
 
     override fun ifMet(element: ConfigurableElement, trigger: DispatchedTrigger, compileData: NoCompileData) {
@@ -26,14 +26,14 @@ object ArgumentEvery: EffectArgument<NoCompileData>("every") {
     }
 
     private fun increment(element: ConfigurableElement, trigger: DispatchedTrigger) {
-        val every = element.config.getIntFromExpression("every", trigger.data)
+        val every = element.config.getIntFromExpression("every_value", trigger.data)
 
-        var current = everyHandler[element.uuid][trigger.dispatcher.uuid] ?: 0
+        var current = everyHandler[element.uuid][trigger.dispatcher.uuid] ?: 0.0
 
-        current++
+        current += trigger.data.value
 
         if (current >= every) {
-            current = 0
+            current = 0.0
         }
 
         everyHandler[element.uuid][trigger.dispatcher.uuid] = current

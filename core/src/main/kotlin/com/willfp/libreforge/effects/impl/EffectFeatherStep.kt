@@ -14,7 +14,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import java.util.UUID
 
 object EffectFeatherStep : Effect<NoCompileData>("feather_step") {
-    private val players = listMap<UUID, UUID>()
+    private val players = mutableMapOf<UUID, List<UUID>>()
 
     override fun onEnable(
         dispatcher: Dispatcher<*>,
@@ -23,11 +23,11 @@ object EffectFeatherStep : Effect<NoCompileData>("feather_step") {
         holder: ProvidedHolder,
         compileData: NoCompileData
     ) {
-        players[dispatcher.uuid] += identifiers.uuid
+        players[dispatcher.uuid] = (players[dispatcher.uuid] ?: mutableListOf()) + identifiers.uuid
     }
 
     override fun onDisable(dispatcher: Dispatcher<*>, identifiers: Identifiers, holder: ProvidedHolder) {
-        players[dispatcher.uuid] -= identifiers.uuid
+        players[dispatcher.uuid] = (players[dispatcher.uuid] ?: mutableListOf()) - identifiers.uuid
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -45,7 +45,7 @@ object EffectFeatherStep : Effect<NoCompileData>("feather_step") {
             return
         }
 
-        if (players[player.uniqueId].isNotEmpty()) {
+        if (players[player.uniqueId]?.isNotEmpty() == true) {
             event.isCancelled = true
         }
     }

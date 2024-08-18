@@ -20,8 +20,8 @@ abstract class MultiMultiplierEffect<T : Any>(id: String) : Effect<NoCompileData
         require("multiplier", "You must specify the multiplier!")
     }
 
-    private val globalModifiers = listMap<UUID, IdentifiedModifier>()
-    private val modifiers = nestedListMap<UUID, T, IdentifiedModifier>()
+    private val globalModifiers = mutableMapOf<UUID, MutableList<IdentifiedModifier>>()
+    private val modifiers = mutableMapOf<UUID, MutableMap<T, MutableList<IdentifiedModifier>>>()
 
     /**
      * The key to look for in arguments, e.g. "stat" or "skill".
@@ -39,33 +39,43 @@ abstract class MultiMultiplierEffect<T : Any>(id: String) : Effect<NoCompileData
             val elements = config.getStrings(key).mapNotNull { getElement(it) }
 
             for (element in elements) {
-                modifiers[dispatcher.uuid][element] += IdentifiedModifier(identifiers.uuid) {
+                val currentMods = modifiers[dispatcher.uuid] ?: mutableMapOf()
+                val currentElement = currentMods[element] ?: mutableListOf()
+                currentElement += IdentifiedModifier(identifiers.uuid) {
                     config.getDoubleFromExpression("multiplier", dispatcher.get())
                 }
+                currentMods[element] = currentElement
+                modifiers[dispatcher.uuid] = currentMods
             }
         } else {
-            globalModifiers[dispatcher.uuid] += IdentifiedModifier(identifiers.uuid) {
+            globalModifiers[dispatcher.uuid] = ((globalModifiers[dispatcher.uuid] ?: mutableListOf()) + IdentifiedModifier(identifiers.uuid) {
                 config.getDoubleFromExpression("multiplier", dispatcher.get())
-            }
+            }).toMutableList()
         }
     }
 
     override fun onDisable(dispatcher: Dispatcher<*>, identifiers: Identifiers, holder: ProvidedHolder) {
-        globalModifiers[dispatcher.uuid].removeIf { it.uuid == identifiers.uuid }
+        val current = globalModifiers[dispatcher.uuid] ?: mutableListOf()
+        current.filterNotNull().toMutableList().removeIf { it.uuid == identifiers.uuid }
+        globalModifiers[dispatcher.uuid] = current
 
         for (element in getAllElements()) {
-            modifiers[dispatcher.uuid][element].removeIf { it.uuid == identifiers.uuid }
+            val currentMods = modifiers[dispatcher.uuid] ?: mutableMapOf()
+            val currentElem = currentMods[element] ?: mutableListOf()
+            currentElem.removeIf { it.uuid == identifiers.uuid }
+            currentMods[element] = currentElem
+            modifiers[dispatcher.uuid] = currentMods
         }
     }
 
     protected fun getMultiplier(dispatcher: Dispatcher<*>, element: T): Double {
         var multiplier = 1.0
 
-        for (modifier in globalModifiers[dispatcher.uuid]) {
+        for (modifier in globalModifiers[dispatcher.uuid] ?: mutableListOf()) {
             multiplier *= modifier.modifier
         }
 
-        for (modifier in modifiers[dispatcher.uuid][element]) {
+        for (modifier in (modifiers[dispatcher.uuid] ?: mutableMapOf())[element] ?: mutableListOf()) {
             multiplier *= modifier.modifier
         }
 

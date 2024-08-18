@@ -45,14 +45,17 @@ abstract class AttributeEffect(
 
         instance.clean(modifierName)
 
-        instance.addModifier(
-            AttributeModifier(
-                identifiers.uuid,
-                modifierName,
-                getValue(config, entity),
-                operation
+        try {
+            instance.addModifier(
+                AttributeModifier(
+                    identifiers.uuid,
+                    modifierName,
+                    getValue(config, entity),
+                    operation
+                )
             )
-        )
+        } catch (ignored: IllegalArgumentException) {}
+
     }
 
     override fun onDisable(dispatcher: Dispatcher<*>, identifiers: Identifiers, holder: ProvidedHolder) {

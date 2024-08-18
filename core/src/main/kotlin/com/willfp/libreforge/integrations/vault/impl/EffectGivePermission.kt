@@ -46,7 +46,7 @@ class EffectGivePermission(
         val player = dispatcher.get<Player>() ?: return
 
         val permission = permissions[dispatcher.uuid]
-            .firstOrNull { it.uuid == identifiers.uuid } ?: return
+            .firstOrNull { it != null && it.uuid == identifiers.uuid } ?: return
 
         permissions[dispatcher.uuid].remove(permission)
 
