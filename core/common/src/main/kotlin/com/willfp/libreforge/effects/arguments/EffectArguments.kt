@@ -4,14 +4,7 @@ import com.willfp.eco.core.config.interfaces.Config
 import com.willfp.eco.core.registry.Registry
 import com.willfp.libreforge.ViolationContext
 import com.willfp.libreforge.effects.arguments.custom.ArgumentCustom
-import com.willfp.libreforge.effects.arguments.impl.ArgumentChainArgs
-import com.willfp.libreforge.effects.arguments.impl.ArgumentChance
-import com.willfp.libreforge.effects.arguments.impl.ArgumentCooldown
-import com.willfp.libreforge.effects.arguments.impl.ArgumentCost
-import com.willfp.libreforge.effects.arguments.impl.ArgumentEvery
-import com.willfp.libreforge.effects.arguments.impl.ArgumentPointCost
-import com.willfp.libreforge.effects.arguments.impl.ArgumentPrice
-import com.willfp.libreforge.effects.arguments.impl.ArgumentRequire
+import com.willfp.libreforge.effects.arguments.impl.*
 
 object EffectArguments : Registry<EffectArgument<*>>() {
     /**
@@ -55,6 +48,7 @@ object EffectArguments : Registry<EffectArgument<*>>() {
         register(ArgumentCooldown)
         register(ArgumentCost)
         register(ArgumentEvery)
+        register(ArgumentEveryValue)
         register(ArgumentPointCost)
         register(ArgumentPrice)
         register(ArgumentRequire)

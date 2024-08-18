@@ -8,8 +8,6 @@ import com.willfp.libreforge.effects.Effect
 import com.willfp.libreforge.effects.Identifiers
 import com.willfp.libreforge.get
 import com.willfp.libreforge.plugin
-import com.willfp.libreforge.proxy.Proxy
-import com.willfp.libreforge.proxy.loadProxy
 import org.bukkit.attribute.Attribute
 import org.bukkit.attribute.AttributeInstance
 import org.bukkit.attribute.AttributeModifier
@@ -22,11 +20,9 @@ abstract class AttributeEffect(
 ) : Effect<NoCompileData>(id) {
     protected abstract fun getValue(config: Config, entity: LivingEntity): Double
 
-    protected open fun canApplyTo(entity: LivingEntity): Boolean = true
-
-    private fun AttributeInstance.clean(name: String, identifiers: Identifiers) {
+    private fun AttributeInstance.clean(name: String) {
         for (modifier in this.modifiers.toList()) {
-            if (modifier.name == id || modifier.name == name || modifier.name == identifiers.key.key) {
+            if (modifier.name == id || modifier.name == name) {
                 this.removeModifier(modifier)
             }
         }
@@ -44,43 +40,34 @@ abstract class AttributeEffect(
         compileData: NoCompileData
     ) {
         val entity = dispatcher.get<LivingEntity>() ?: return
-
-        if (!canApplyTo(entity)) {
-            return
-        }
-
         val instance = entity.getAttribute(attribute) ?: return
         val modifierName = "libreforge:${this.id} - ${identifiers.key.key} (${holder.holder.id})"
 
-        instance.clean(modifierName, identifiers)
+        instance.clean(modifierName)
 
-        val modifier = attributeModifier(
-            identifiers,
-            modifierName,
-            getValue(config, entity),
-            operation
-        )
+        try {
+            instance.addModifier(
+                AttributeModifier(
+                    identifiers.uuid,
+                    modifierName,
+                    getValue(config, entity),
+                    operation
+                )
+            )
+        } catch (ignored: IllegalArgumentException) {}
 
-        // Extra check to prevent adding the same modifier twice.
-        instance.removeModifier(modifier)
-        instance.addModifier(modifier)
     }
 
     override fun onDisable(dispatcher: Dispatcher<*>, identifiers: Identifiers, holder: ProvidedHolder) {
         val entity = dispatcher.get<LivingEntity>() ?: return
-
-        if (!canApplyTo(entity)) {
-            return
-        }
-
         val instance = entity.getAttribute(attribute) ?: return
         val modifierName = "libreforge:${this.id} - ${identifiers.key.key} (${holder.holder.id})"
 
-        instance.clean(modifierName, identifiers)
+        instance.clean(modifierName)
 
         instance.removeModifier(
-            attributeModifier(
-                identifiers,
+            AttributeModifier(
+                identifiers.uuid,
                 modifierName,
                 0.0,
                 operation
@@ -91,27 +78,5 @@ abstract class AttributeEffect(
         plugin.scheduler.run(entity) {
             constrainAttribute(entity, instance.value)
         }
-    }
-
-    private fun attributeModifier(
-        identifiers: Identifiers,
-        name: String,
-        value: Double,
-        operation: AttributeModifier.Operation
-    ) = loadProxy(AttributeManager::class.java).createModifier(
-        identifiers,
-        name,
-        value,
-        operation
-    )
-
-    @Proxy("AttributeManagerImpl")
-    interface AttributeManager {
-        fun createModifier(
-            identifiers: Identifiers,
-            name: String,
-            value: Double,
-            operation: AttributeModifier.Operation
-        ): AttributeModifier
     }
 }
