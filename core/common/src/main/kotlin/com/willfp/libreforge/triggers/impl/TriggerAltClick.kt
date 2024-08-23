@@ -45,7 +45,7 @@ object TriggerAltClick : Trigger("alt_click") {
         Material.RESPAWN_ANCHOR,
         Material.NOTE_BLOCK,
         Material.ITEM_FRAME,
-        Material.CHEST,
+        // Material.CHEST,
         Material.BARREL,
         Material.BEACON,
         Material.LECTERN,

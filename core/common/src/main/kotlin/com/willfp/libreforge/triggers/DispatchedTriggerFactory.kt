@@ -16,7 +16,7 @@ Prevents multiple identical triggers from being triggered in the same tick.
 class DispatchedTriggerFactory(
     private val plugin: EcoPlugin
 ) {
-    private val dispatcherTriggers = listMap<UUID, Int>()
+    private val dispatcherTriggers = mutableMapOf<UUID, List<Int>>()
 
     @Deprecated(
         "Use create(dispatcher, trigger, data) instead",
@@ -33,11 +33,11 @@ class DispatchedTriggerFactory(
         }
 
         val hash = (trigger.hashCode() shl 5) xor data.hashCode()
-        if (hash in dispatcherTriggers[dispatcher.uuid]) {
+        if (hash in (dispatcherTriggers[dispatcher.uuid] ?: mutableListOf())) {
             return null
         }
 
-        dispatcherTriggers[dispatcher.uuid] += hash
+        dispatcherTriggers[dispatcher.uuid] = (dispatcherTriggers[dispatcher.uuid] ?: mutableListOf()) + hash
         return DispatchedTrigger(dispatcher, trigger, data.copy(dispatcher = dispatcher))
     }
 
