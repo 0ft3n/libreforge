@@ -156,9 +156,11 @@ abstract class Trigger(
         }
 
         // Probably a better way to work with counters, but this works for now.
-        for (counter in counters) {
-            counter.bindings.forEach { it.accept(dispatch) }
-        }
+        try {
+            for (counter in counters) {
+                counter.bindings.forEach { it.accept(dispatch) }
+            }
+        } catch (ignored: ConcurrentModificationException) {}
     }
 
     open fun postRegister() {

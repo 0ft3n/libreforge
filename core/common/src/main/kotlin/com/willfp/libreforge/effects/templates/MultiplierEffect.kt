@@ -34,17 +34,23 @@ abstract class MultiplierEffect(id: String) : Effect<NoCompileData>(id) {
     }
 
     override fun onDisable(dispatcher: Dispatcher<*>, identifiers: Identifiers, holder: ProvidedHolder) {
-        modifiers[dispatcher.uuid].removeIf { it.uuid == identifiers.uuid }
+        try {
+            modifiers[dispatcher.uuid].removeIf { it.uuid == identifiers.uuid }
+        } catch (ignored: Exception) {}
     }
 
     protected fun getMultiplier(dispatcher: Dispatcher<*>): Double {
         var multiplier = 1.0
 
-        for (modifier in modifiers[dispatcher.uuid]) {
-            multiplier *= modifier.modifier
-        }
+        try {
+            for (modifier in modifiers[dispatcher.uuid]) {
+                multiplier *= modifier.modifier
+            }
 
-        return multiplier
+            return multiplier
+        } catch (ignored: ConcurrentModificationException) {}
+
+        return 1.0
     }
 
     @Deprecated(

@@ -20,7 +20,7 @@ abstract class ChanceMultiplierEffect(id: String) : Effect<NoCompileData>(id) {
         require("chance", "You must specify the chance!")
     }
 
-    private val modifiers = listMap<UUID, IdentifiedModifier>()
+    private val modifiers = mutableMapOf<UUID, List<IdentifiedModifier>>()
 
     override fun onEnable(
         dispatcher: Dispatcher<*>,
@@ -29,19 +29,19 @@ abstract class ChanceMultiplierEffect(id: String) : Effect<NoCompileData>(id) {
         holder: ProvidedHolder,
         compileData: NoCompileData
     ) {
-        modifiers[dispatcher.uuid] += IdentifiedModifier(identifiers.uuid) {
+        modifiers[dispatcher.uuid] = (modifiers[dispatcher.uuid] ?: emptyList()) + IdentifiedModifier(identifiers.uuid) {
             config.getDoubleFromExpression("chance", dispatcher.get<Player>()!!)
         }
     }
 
     override fun onDisable(dispatcher: Dispatcher<*>, identifiers: Identifiers, holder: ProvidedHolder) {
-        modifiers[dispatcher.uuid].removeIf { it.uuid == identifiers.uuid }
+        modifiers[dispatcher.uuid] = (modifiers[dispatcher.uuid] ?: emptyList()).filter { it.uuid != identifiers.uuid }
     }
 
     protected fun passesChance(dispatcher: Dispatcher<*>): Boolean {
         var chance = 1.0
 
-        for (modifier in modifiers[dispatcher.uuid]) {
+        for (modifier in modifiers[dispatcher.uuid] ?: emptyList()) {
             chance *= (100 - modifier.modifier) / 100
         }
 
