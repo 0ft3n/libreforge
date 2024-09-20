@@ -1,6 +1,6 @@
 subprojects {
     dependencies {
-        compileOnly("com.willfp:eco:6.73.5-folia")
+        compileOnly("com.willfp:eco:6.74.1-folia")
     }
 }
 
