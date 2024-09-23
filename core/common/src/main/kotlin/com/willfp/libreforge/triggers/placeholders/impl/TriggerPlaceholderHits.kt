@@ -13,6 +13,7 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import java.util.UUID
+import org.bukkit.event.entity.EntityDeathEvent
 
 object TriggerPlaceholderHits : TriggerPlaceholder("hits") {
     private const val HITS_META_KEY = "libreforge_tracked_hits"
@@ -54,6 +55,12 @@ object TriggerPlaceholderHits : TriggerPlaceholder("hits") {
 
         entity.removeMetadata(HITS_META_KEY, plugin)
         entity.setMetadata(HITS_META_KEY, plugin.createMetadataValue(map))
+    }
+
+    @EventHandler
+    fun handleDeath(event: EntityDeathEvent) {
+        val entity = event.entity
+        entity.removeMetadata(HITS_META_KEY, plugin)
     }
 
     private fun LivingEntity.getHits(player: Player): Int {
