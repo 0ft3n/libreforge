@@ -12,6 +12,8 @@ import com.willfp.libreforge.plugin
 import com.willfp.libreforge.triggers.TriggerData
 import com.willfp.libreforge.triggers.TriggerParameter
 import org.bukkit.entity.LivingEntity
+import org.bukkit.event.EventHandler
+import org.bukkit.event.entity.EntityDeathEvent
 
 object EffectDamageNearbyEntities : Effect<Collection<TestableEntity>>("damage_nearby_entities") {
     override val parameters = setOf(
@@ -68,6 +70,11 @@ object EffectDamageNearbyEntities : Effect<Collection<TestableEntity>>("damage_n
         }
 
         return true
+    }
+
+    @EventHandler
+    fun handleDeath(event: EntityDeathEvent) {
+        event.entity.removeMetadata("ignore-nearby-damage", plugin)
     }
 
     override fun makeCompileData(config: Config, context: ViolationContext): Collection<TestableEntity> {
